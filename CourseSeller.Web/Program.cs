@@ -1,3 +1,5 @@
+using CourseSeller.Core.Services;
+using CourseSeller.Core.Services.Interfaces;
 using CourseSeller.DataLayer.Contexts;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,6 +18,13 @@ services.AddDbContext<MSSQLSContext>(options =>
 {
     options.UseSqlServer(conf.GetConnectionString("MSSQLSConnection"));
 });
+
+#endregion
+
+
+#region IoC
+
+services.AddTransient<IAccountService, AccountService>();
 
 #endregion
 
