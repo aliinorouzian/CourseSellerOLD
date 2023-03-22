@@ -19,17 +19,25 @@
             <p><a asp-action="Login">ورود به سایت</a></p>
         </div>
     }
+    else if (IsActive == AccountService.TokenExipered)
+    {
+        <div class="alert alert-warning">
+            <p>لینک فعالسازی شما منقضی شده است. لینک فعالسازی جدید به ایمیل شما ارسال شد.</p>
+            <p><a asp-action="Login">ورود به سایت</a></p>
+        </div>
+    }
+    else if (IsActive == AccountService.AllreadyActivated)
+    {
+        <div class="alert alert-info">
+            <p>حساب کاربری شما در حال حاضر فعال است!</p>
+            <p><a asp-action="Login">ورود به سایت</a></p>
+        </div>
+    }
     else if (IsActive == AccountService.NotFoundAccount)
     {
         <div class="alert alert-danger">
             <p>حساب کاربری ای با مشخصات ارسال شده یافت نشد.</p>
         </div>
     }
-    else if (IsActive == AccountService.AllreadyActivated)
-    {
-        <div class="alert alert-warning">
-            <p>حساب کاربری شما در حال حاضر فعال است!</p>
-            <p><a asp-action="Login">ورود به سایت</a></p>
-        </div>
-    }
+    
 </div>

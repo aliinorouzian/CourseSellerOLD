@@ -20,6 +20,8 @@ namespace CourseSeller.Core.Services
         public const byte SuccessActivated = 0;
         public const byte NotFoundAccount = 1;
         public const byte AllreadyActivated = 2;
+        public const byte TokenExipered = 3;
+
 
         private MSSQLSContext _context;
 
@@ -56,9 +58,17 @@ namespace CourseSeller.Core.Services
             User user = await _context.Users.SingleOrDefaultAsync(u => u.ActiveCode == activeCode);
             if (user == null) return NotFoundAccount;
             if (user.IsActive) return AllreadyActivated;
+            // expire token after 10 minute. 
+            if (user.ActiveCodeGenerateDateTime.AddMinutes(10) < DateTime.Now)
+            {
+                // todo: send new link
+                user.ActiveCode = CodeGenerators.GenerateUniqueCode();
+                user.ActiveCodeGenerateDateTime = DateTime.Now;
+                await _context.SaveChangesAsync();
+                return TokenExipered;
+            }
 
             user.IsActive = true;
-            user.ActiveCode = CodeGenerators.GenerateUniqueCode();
             await _context.SaveChangesAsync();
 
             return SuccessActivated;

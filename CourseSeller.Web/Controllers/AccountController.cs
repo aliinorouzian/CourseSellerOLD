@@ -48,10 +48,11 @@ namespace CourseSeller.Web.Controllers
             }
             if (errorFlag) { return View(viewModel); }
 
-            // register
+            // register 
             User user = new User()
             {
                 ActiveCode = CodeGenerators.GenerateUniqueCode(),
+                ActiveCodeGenerateDateTime = DateTime.Now,
                 Email = FixText.FixEmail(viewModel.Email),
                 UserName = viewModel.UserName.ToLower(),
                 IsActive = false,

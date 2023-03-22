@@ -29,8 +29,10 @@ namespace CourseSeller.DataLayer.Entities.Users
         public string Password { get; set; }
 
         [Display(Name = "کد فعالسازی")]
-        [MaxLength(50,ErrorMessage = "{0} نمی تواند بیشتر از {1} کاراکتر باشد.")]
+        [MaxLength(50, ErrorMessage = "{0} نمی تواند بیشتر از {1} کاراکتر باشد.")]
         public string ActiveCode { get; set; }
+
+        public DateTime ActiveCodeGenerateDateTime { get; set; }
 
         [Display(Name = "وضعیت")]
         public bool IsActive { get; set; }
