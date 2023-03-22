@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CourseSeller.Core.DTOs.Accounts;
+using CourseSeller.DataLayer.Entities.Users;
 
 namespace CourseSeller.Core.Services.Interfaces
 {
@@ -10,5 +12,9 @@ namespace CourseSeller.Core.Services.Interfaces
     {
         Task<bool> IsExistUserName(string userName);
         Task<bool> IsExistEmail(string email);
+        Task<User> AddUser(User user);
+        Task<User> GetUserByEmail(string email);
+        Task<byte> ActiveAccount(string activeCode);
+
     }
 }

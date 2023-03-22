@@ -1,17 +1,12 @@
 ﻿@model CourseSeller.Core.DTOs.Accounts.RegisterViewModel
 @{
-    ViewData["Title"] = "ثبت نام";
+    ViewData["Title"] = "عضویت";
 }
 
 
-<div class="container">
-    <nav aria-label="breadcrumb">
-        <ul class="breadcrumb">
-            <li class="breadcrumb-item"><a href="/">CourseSeller</a></li>
-            <li class="breadcrumb-item active" aria-current="page">عضویت در سایت</li>
-        </ul>
-    </nav>
-</div>
+<partial name="_AddressBarStart"/>
+عضویت در سایت
+<partial name="_AddressBarFinish"/>
 
 
 <main class="client-page">
@@ -27,33 +22,37 @@
                     <span class="input-group-addon" id="username"><i class="zmdi zmdi-account"></i></span>
                     <input asp-for="UserName" type="text" class="form-control" placeholder="نام و نام خانوادگی" aria-describedby="username">
                 </div>
+                <span asp-validation-for="UserName" class="text-danger"></span>
+
 
                 <div class="input-group">
                     <span class="input-group-addon" id="email-address"><i class="zmdi zmdi-email"></i></span>
                     <input asp-for="Email" type="email" class="form-control" placeholder="ایمیل" aria-describedby="email-address">
                 </div>
+                <span asp-validation-for="Email" class="text-danger"></span>
 
                 <div class="input-group">
                     <span class="input-group-addon" id="password"><i class="zmdi zmdi-lock"></i></span>
                     <input asp-for="Password" type="password" class="form-control" placeholder="رمز عبور" aria-describedby="password">
                 </div>
+                <span asp-validation-for="Password" class="text-danger"></span>
 
                 <div class="input-group">
                     <span class="input-group-addon" id="repassword"><i class="zmdi zmdi-lock"></i></span>
                     <input asp-for="RePassword" type="password" class="form-control" placeholder="تکرار رمز عبور" aria-describedby="repassword">
                 </div>
+                <span asp-validation-for="RePassword" class="text-danger"></span>
 
                 <div class="accept-rules">
-                    <label><input type="checkbox" name="">  قوانین و مقررات سایت را میپذیرم </label>
+                    <label><input asp-for="AcceptRules" type="checkbox">  قوانین و مقررات سایت را میپذیرم </label>
                 </div>
+                <span asp-validation-for="AcceptRules" class="text-danger"></span>
 
                 <div class="link">
-                    <a href=""> <i class="zmdi zmdi-assignment"></i> قوانین و مقررات سایت !</a>
-                    <a href=""> <i class="zmdi zmdi-account"></i> ورود به سایت </a>
+                    <a href="#"> <i class="zmdi zmdi-assignment"></i> قوانین و مقررات سایت !</a>
+                    <a asp-action="Login"> <i class="zmdi zmdi-account"></i> ورود به سایت </a>
                 </div>
 
-                <div asp-validation-summary="All" class="text-danger">
-                </div>
 
                 <button class="btn btn-success"> عضویت در سایت </button>
 

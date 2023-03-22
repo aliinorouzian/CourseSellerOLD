@@ -1,0 +1,35 @@
+﻿@using CourseSeller.Core.Services
+
+@{
+    ViewData["Title"] = "فعالسازی";
+    byte IsActive = (byte)ViewData["IsActive"];
+}
+
+
+<partial name="_AddressBarStart" />
+فعالسازی حساب کاربری
+<partial name="_AddressBarFinish" />
+
+
+<div class="container">
+    @if (IsActive==AccountService.SuccessActivated)
+    {
+        <div class="alert alert-success">
+            <p>حساب کاربری شما با موفقیت فعال شد.</p>
+            <p><a asp-action="Login">ورود به سایت</a></p>
+        </div>
+    }
+    else if (IsActive == AccountService.NotFoundAccount)
+    {
+        <div class="alert alert-danger">
+            <p>حساب کاربری ای با مشخصات ارسال شده یافت نشد.</p>
+        </div>
+    }
+    else if (IsActive == AccountService.AllreadyActivated)
+    {
+        <div class="alert alert-warning">
+            <p>حساب کاربری شما در حال حاضر فعال است!</p>
+            <p><a asp-action="Login">ورود به سایت</a></p>
+        </div>
+    }
+</div>
