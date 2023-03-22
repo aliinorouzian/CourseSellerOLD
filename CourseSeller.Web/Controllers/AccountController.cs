@@ -1,9 +1,12 @@
-﻿using CourseSeller.Core.Convertors;
+﻿using System.Security.Claims;
+using CourseSeller.Core.Convertors;
 using CourseSeller.Core.DTOs.Accounts;
 using CourseSeller.Core.Generators;
 using CourseSeller.Core.Security;
 using CourseSeller.Core.Services.Interfaces;
 using CourseSeller.DataLayer.Entities.Users;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CourseSeller.Web.Controllers
@@ -101,8 +104,28 @@ namespace CourseSeller.Web.Controllers
                     return View(viewModel);
                 }
 
+
+                #region Login rules
+
+                var claims = new List<Claim>()
+                {
+                    new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
+                    new Claim(ClaimTypes.Name, user.UserName),
+                };
+                var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                var principal = new ClaimsPrincipal(identity);
+                var properties = new AuthenticationProperties()
+                {
+                    IsPersistent = viewModel.RememberMe,
+                };
+                await HttpContext.SignInAsync(principal, properties);
+
+                #endregion
+
+
                 ViewData["IsSuccess"] = true;
-                // todo: login user
+
+
                 return View();
             }
 
@@ -121,6 +144,20 @@ namespace CourseSeller.Web.Controllers
             ViewData["IsActive"] = await _accountService.ActiveAccount(id);
 
             return View();
+        }
+
+        #endregion
+
+
+        #region Logout
+
+        [HttpPost]
+        public async Task<IActionResult> Logout(string id)
+        {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+
+            return Redirect("/");
         }
 
         #endregion
