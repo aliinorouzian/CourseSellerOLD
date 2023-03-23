@@ -8,16 +8,22 @@ using CourseSeller.DataLayer.Entities.Users;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
+using TopLearn.Core.Convertors;
+using TopLearn.Core.Senders;
 
 namespace CourseSeller.Web.Controllers
 {
     public class AccountController : Controller
     {
         private IAccountService _accountService;
+        private IViewRenderService _viewRender;
+        private IConfiguration _configuration;
 
-        public AccountController(IAccountService accountService)
+        public AccountController(IAccountService accountService, IViewRenderService viewRender, IConfiguration configuration)
         {
             _accountService = accountService;
+            _viewRender = viewRender;
+            _configuration = configuration;
         }
 
 
@@ -65,7 +71,15 @@ namespace CourseSeller.Web.Controllers
             };
             user = await _accountService.AddUser(user);
 
-            // todo: send activation email
+
+            #region Send Activate Email
+
+            string body = _viewRender.RenderToStringAsync("Emails/_ActivateEmail", user);
+            // todo: queue it
+            SendEmail.Send(user.Email, "فعالسازی", body, conf: _configuration);
+
+            #endregion
+
 
             return View("SuccessRegister", user);
         }
@@ -139,7 +153,7 @@ namespace CourseSeller.Web.Controllers
 
         #region Active Account
 
-        public async Task<IActionResult> ActiveAccount(string id)
+        public async Task<IActionResult> Activate(string id)
         {
             ViewData["IsActive"] = await _accountService.ActiveAccount(id);
 

@@ -3,6 +3,7 @@ using CourseSeller.Core.Services.Interfaces;
 using CourseSeller.DataLayer.Contexts;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
+using TopLearn.Core.Convertors;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
@@ -43,6 +44,7 @@ services.AddDbContext<MSSQLSContext>(options =>
 #region IoC
 
 services.AddTransient<IAccountService, AccountService>();
+services.AddTransient<IViewRenderService, RenderViewToString>();
 
 #endregion
 

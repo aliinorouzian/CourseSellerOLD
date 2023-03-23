@@ -12,6 +12,7 @@ using CourseSeller.Core.Services.Interfaces;
 using CourseSeller.DataLayer.Contexts;
 using CourseSeller.DataLayer.Entities.Users;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace CourseSeller.Core.Services
 {
@@ -24,10 +25,12 @@ namespace CourseSeller.Core.Services
 
 
         private MSSQLSContext _context;
+        private IConfiguration _conf;
 
-        public AccountService(MSSQLSContext context)
+        public AccountService(MSSQLSContext context, IConfiguration conf)
         {
             _context = context;
+            _conf = conf;
         }
 
 
@@ -59,7 +62,8 @@ namespace CourseSeller.Core.Services
             if (user == null) return NotFoundAccount;
             if (user.IsActive) return AllreadyActivated;
             // expire token after 10 minute. 
-            if (user.ActiveCodeGenerateDateTime.AddMinutes(10) < DateTime.Now)
+            int expireTimePerMin = Convert.ToInt32(_conf.GetSection("Emails").GetSection("ExpireTimePerMin").Value);
+            if (user.ActiveCodeGenerateDateTime.AddMinutes(expireTimePerMin) < DateTime.Now)
             {
                 // todo: send new link
                 user.ActiveCode = CodeGenerators.GenerateUniqueCode();
