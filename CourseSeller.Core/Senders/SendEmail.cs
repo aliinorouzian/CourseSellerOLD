@@ -7,11 +7,23 @@ using System.Web;
 
 namespace CourseSeller.Core.Senders
 {
-    public class SendEmail
+    public interface ISendEmail
     {
-        public static void Send(string to, string subject, string body, IConfiguration conf)
+        public Task<bool> Send(string to, string subject, string body);
+    }
+
+    public class SendEmail : ISendEmail
+    {
+        private IConfiguration _conf;
+
+        public SendEmail(IConfiguration conf)
         {
-            var GmailSettings = conf.GetSection("Emails").GetSection("Gmail");
+            _conf = conf;
+        }
+
+        public async Task<bool> Send(string to, string subject, string body)
+        {
+            var GmailSettings = _conf.GetSection("Emails").GetSection("Gmail");
 
             MailMessage mail = new MailMessage();
 
@@ -19,7 +31,7 @@ namespace CourseSeller.Core.Senders
                 Convert.ToInt32(GmailSettings.GetSection("Port").Value));
             SmtpServer.EnableSsl = true;
 
-            mail.From = new MailAddress(GmailSettings.GetSection("EmailAddress").Value, conf["SiteName"]);
+            mail.From = new MailAddress(GmailSettings.GetSection("EmailAddress").Value, _conf["SiteName"]);
             mail.To.Add(to);
             mail.Subject = subject;
             mail.Body = body;
@@ -33,7 +45,16 @@ namespace CourseSeller.Core.Senders
             SmtpServer.Credentials = new System.Net.NetworkCredential(GmailSettings.GetSection("EmailAddress").Value,
                 GmailSettings.GetSection("Password").Value);
 
-            SmtpServer.Send(mail);
+            try
+            {
+                await SmtpServer.SendMailAsync(mail);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return false;
+            }
 
         }
     }

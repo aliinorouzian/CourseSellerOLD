@@ -6,6 +6,7 @@ using CourseSeller.Core.Security;
 using CourseSeller.Core.Senders;
 using CourseSeller.Core.Services.Interfaces;
 using CourseSeller.DataLayer.Entities.Users;
+using Hangfire;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
@@ -18,12 +19,16 @@ namespace CourseSeller.Web.Controllers
         private IAccountService _accountService;
         private IViewRenderService _viewRender;
         private IConfiguration _configuration;
+        private IBackgroundJobClient _backgroundJobClient;
+        private ISendEmail _sendEmail;
 
-        public AccountController(IAccountService accountService, IViewRenderService viewRender, IConfiguration configuration)
+        public AccountController(IAccountService accountService, IViewRenderService viewRender, IConfiguration configuration, IBackgroundJobClient backgroundJobClient, ISendEmail sendEmail)
         {
             _accountService = accountService;
             _viewRender = viewRender;
             _configuration = configuration;
+            _backgroundJobClient = backgroundJobClient;
+            _sendEmail = sendEmail;
         }
 
 
@@ -76,7 +81,9 @@ namespace CourseSeller.Web.Controllers
 
             string body = _viewRender.RenderToStringAsync("Emails/_ActivateEmail", user);
             // todo: queue it
-            SendEmail.Send(user.Email, "فعالسازی", body, conf: _configuration);
+
+            _backgroundJobClient.Enqueue(() =>
+                _sendEmail.Send(user.Email, "فعالسازی", body));
 
             #endregion
 
