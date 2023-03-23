@@ -1,9 +1,9 @@
+using CourseSeller.Core.Convertors;
 using CourseSeller.Core.Services;
 using CourseSeller.Core.Services.Interfaces;
 using CourseSeller.DataLayer.Contexts;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
-using TopLearn.Core.Convertors;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;

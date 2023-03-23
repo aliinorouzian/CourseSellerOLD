@@ -3,13 +3,13 @@ using CourseSeller.Core.Convertors;
 using CourseSeller.Core.DTOs.Accounts;
 using CourseSeller.Core.Generators;
 using CourseSeller.Core.Security;
+using CourseSeller.Core.Senders;
 using CourseSeller.Core.Services.Interfaces;
 using CourseSeller.DataLayer.Entities.Users;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
-using TopLearn.Core.Convertors;
-using TopLearn.Core.Senders;
+
 
 namespace CourseSeller.Web.Controllers
 {

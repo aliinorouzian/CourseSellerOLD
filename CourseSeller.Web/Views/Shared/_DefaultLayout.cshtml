@@ -1,8 +1,10 @@
-﻿<!DOCTYPE html>
+﻿@inject IConfiguration Configuration
+
+<!DOCTYPE html>
 <html class="no-js" dir="rtl" lang="fa-IR">
 <head>
     <meta charset="UTF-8">
-    <title> CourseSeller | @ViewData["Title"] </title>
+    <title> @Configuration["SiteName"] | @ViewData["Title"] </title>
 
     <partial name="_MetaTags" />
     <partial name="_StyleTags" />

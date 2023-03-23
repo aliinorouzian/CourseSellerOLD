@@ -5,7 +5,7 @@ using System.Linq;
 using System.Net.Mail;
 using System.Web;
 
-namespace TopLearn.Core.Senders
+namespace CourseSeller.Core.Senders
 {
     public class SendEmail
     {
