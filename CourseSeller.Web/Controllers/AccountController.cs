@@ -121,6 +121,7 @@ namespace CourseSeller.Web.Controllers
                 {
                     ModelState.AddModelError("Email", "حساب کاربری شما فعال نمی باشد. ایمیل حاوی لینک فعالسازی برای شما ارسال شد.");
                     // todo: send new email
+                    await _accountService.RevokeActiveCodeAndNewSendEmail(user);
 
                     return View(viewModel);
                 }

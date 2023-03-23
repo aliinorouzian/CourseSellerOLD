@@ -8,9 +8,11 @@ using CourseSeller.Core.Convertors;
 using CourseSeller.Core.DTOs.Accounts;
 using CourseSeller.Core.Generators;
 using CourseSeller.Core.Security;
+using CourseSeller.Core.Senders;
 using CourseSeller.Core.Services.Interfaces;
 using CourseSeller.DataLayer.Contexts;
 using CourseSeller.DataLayer.Entities.Users;
+using Hangfire;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
@@ -26,11 +28,17 @@ namespace CourseSeller.Core.Services
 
         private MSSQLSContext _context;
         private IConfiguration _conf;
+        private IBackgroundJobClient _backgroundJobClient;
+        private ISendEmail _sendEmail;
+        private IViewRenderService _viewRender;
 
-        public AccountService(MSSQLSContext context, IConfiguration conf)
+        public AccountService(MSSQLSContext context, IConfiguration conf, IBackgroundJobClient backgroundJobClient, ISendEmail sendEmail, IViewRenderService viewRender)
         {
             _context = context;
             _conf = conf;
+            _backgroundJobClient = backgroundJobClient;
+            _sendEmail = sendEmail;
+            _viewRender = viewRender;
         }
 
 
@@ -66,9 +74,8 @@ namespace CourseSeller.Core.Services
             if (user.ActiveCodeGenerateDateTime.AddMinutes(expireTimePerMin) < DateTime.Now)
             {
                 // todo: send new link
-                user.ActiveCode = CodeGenerators.GenerateUniqueCode();
-                user.ActiveCodeGenerateDateTime = DateTime.Now;
-                await _context.SaveChangesAsync();
+                await RevokeActiveCodeAndNewSendEmail(user);
+
                 return TokenExipered;
             }
 
@@ -76,6 +83,19 @@ namespace CourseSeller.Core.Services
             await _context.SaveChangesAsync();
 
             return SuccessActivated;
+        }
+
+        public async Task<bool> RevokeActiveCodeAndNewSendEmail(User user)
+        {
+            user.ActiveCode = CodeGenerators.GenerateUniqueCode();
+            user.ActiveCodeGenerateDateTime = DateTime.Now;
+            await _context.SaveChangesAsync();
+
+            string body = _viewRender.RenderToStringAsync("Emails/_ActivateEmail", user);
+            _backgroundJobClient.Enqueue(() =>
+                _sendEmail.Send(user.Email, "فعالسازی", body));
+
+            return true;
         }
     }
 }

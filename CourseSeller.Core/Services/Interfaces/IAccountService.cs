@@ -15,6 +15,7 @@ namespace CourseSeller.Core.Services.Interfaces
         Task<User> AddUser(User user);
         Task<User> GetUserByEmail(string email);
         Task<byte> ActiveAccount(string activeCode);
+        Task<bool> RevokeActiveCodeAndNewSendEmail(User user);
 
     }
 }
