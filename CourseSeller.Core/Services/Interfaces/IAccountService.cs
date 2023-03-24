@@ -14,8 +14,11 @@ namespace CourseSeller.Core.Services.Interfaces
         Task<bool> IsExistEmail(string email);
         Task<User> AddUser(User user);
         Task<User> GetUserByEmail(string email);
+        Task<User> GetUserByActiveCode(string activeCode);
+        Task<bool> UpdateUser(User user);
         Task<byte> ActiveAccount(string activeCode);
-        Task<bool> RevokeActiveCodeAndNewSendEmail(User user);
-
+        Task<bool> RevokeActiveCodeAndNewSendEmail(User user, string emailBody = "Emails/_ActivateEmail", string emailSubject = "فعالسازی");
+        Task<bool> RevokeActiveCode(User user);
+        Task<bool> ResetPassword(User user, string newPassword);
     }
 }

@@ -11,8 +11,13 @@
 
 <main class="client-page">
     <div class="container-content">
-        
-        @if (ViewData["IsSuccess"]!=null)
+        @if (TempData["ResetPasswordIsSuccess"] != null)
+        {
+            <div class="alert alert-success">
+                کلمه عبور شما با موفقیت تغییر یافت.
+            </div>
+        }
+        @if (ViewData["IsSuccess"] != null)
         {
             <div class="alert alert-success">
                 ورود با موفقیت انجام شد. بعد چند ثانیه به صفحه اصلی هدایت می شوید.
@@ -29,7 +34,7 @@
         <div class="form-layer">
 
             <form asp-action="Login" method="post">
-                
+
                 <div class="input-group">
                     <span class="input-group-addon" id="email-address"><i class="zmdi zmdi-email"></i></span>
                     <input asp-for="Email" type="email" class="form-control" placeholder="ایمیل" aria-describedby="email-address">
@@ -38,7 +43,7 @@
 
                 <div class="input-group">
                     <span class="input-group-addon" id="password"><i class="zmdi zmdi-lock"></i></span>
-                    <input  asp-for="Password" type="password" class="form-control" placeholder="رمز عبور " aria-describedby="password">
+                    <input asp-for="Password" type="password" class="form-control" placeholder="رمز عبور " aria-describedby="password">
                 </div>
                 <span class="text-danger" asp-validation-for="Password"></span>
 
@@ -47,10 +52,10 @@
                 </div>
 
                 <div class="link">
-                    <a href="#"> <i class="zmdi zmdi-lock"></i> رمز عبور خود را فراموش کرده ام !</a>
+                    <a asp-controller="Account" asp-action="ForgotPassword"> <i class="zmdi zmdi-lock"></i> رمز عبور خود را فراموش کرده ام !</a>
                     <a asp-controller="Account" asp-action="Register"> <i class="zmdi zmdi-account"></i> عضویت در سایت </a>
                 </div>
-                        
+
                 <button class="btn btn-success"> ورود به سایت </button>
 
             </form>
@@ -59,9 +64,9 @@
     </div>
 </main>
 
-                    
-                    
+
+
 @section Scripts
-{
+    {
     <partial name="_ValidationScriptsPartial" />
 }

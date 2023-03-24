@@ -9,6 +9,7 @@ using CourseSeller.DataLayer.Entities.Users;
 using Hangfire;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -34,12 +35,13 @@ namespace CourseSeller.Web.Controllers
 
         #region Register
 
+        [AllowAnonymous]
         public async Task<IActionResult> Register()
         {
             return View();
         }
 
-
+        [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> Register(RegisterViewModel viewModel)
         {
@@ -96,12 +98,14 @@ namespace CourseSeller.Web.Controllers
 
         #region Login
 
+        [AllowAnonymous]
         public async Task<IActionResult> Login()
         {
             return View();
         }
 
         [HttpPost]
+        [AllowAnonymous]
         public async Task<IActionResult> Login(LoginViewModel viewModel)
         {
             bool errorFlag = false;
@@ -161,6 +165,7 @@ namespace CourseSeller.Web.Controllers
 
         #region Active Account
 
+        [AllowAnonymous]
         public async Task<IActionResult> Activate(string id)
         {
             ViewData["IsActive"] = await _accountService.ActiveAccount(id);
@@ -173,6 +178,7 @@ namespace CourseSeller.Web.Controllers
 
         #region Logout
 
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> Logout(string id)
         {
@@ -180,6 +186,82 @@ namespace CourseSeller.Web.Controllers
 
 
             return Redirect("/");
+        }
+
+        #endregion
+
+
+        #region Forgot Password
+
+        [AllowAnonymous]
+        public async Task<IActionResult> ForgotPassword()
+        {
+            return View();
+        }
+
+        [AllowAnonymous]
+        [HttpPost]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel viewModel)
+        {
+            bool errorFlag = false;
+            if (!ModelState.IsValid)
+                errorFlag = true;
+
+            string fixedEmail = FixText.FixEmail(viewModel.Email);
+            User user = await _accountService.GetUserByEmail(fixedEmail);
+            if (user == null)
+            {
+                ModelState.AddModelError("Email", "کاربری یافت نشد.");
+                errorFlag = true;
+            }
+
+            if (errorFlag) { return View(viewModel); }
+
+            await _accountService.RevokeActiveCodeAndNewSendEmail(user, "Emails/_ForgotPassword", "بازیابی حساب کاربری");
+            ViewData["IsSuccess"] = true;
+
+            return View();
+        }
+
+
+        #endregion
+
+
+        #region Reset Password
+
+        [AllowAnonymous]
+        public async Task<IActionResult> ResetPassword(string id)
+        {
+            return View(new ResetPasswordViewModel()
+            {
+                ActiveCode = id,
+            });
+        }
+
+        [AllowAnonymous]
+        [HttpPost]
+        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel viewModel)
+        {
+            bool errorFlag = false;
+            if (!ModelState.IsValid)
+                errorFlag = true;
+
+            User user = await _accountService.GetUserByActiveCode(viewModel.ActiveCode);
+            if (user == null)
+            {
+                ModelState.AddModelError("Email", "لینک شما منقضی شده است. لینک جدید برای شما ارسال شد.");
+                errorFlag = true;
+            }
+
+            if (errorFlag) { return View(viewModel); }
+
+            // This will reset it and expire used token.
+            await _accountService.ResetPassword(user, viewModel.Password);
+
+            TempData["ResetPasswordIsSuccess"] = true;
+
+
+            return RedirectToAction(nameof(Login));
         }
 
         #endregion

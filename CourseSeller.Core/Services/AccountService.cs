@@ -64,6 +64,38 @@ namespace CourseSeller.Core.Services
             return await _context.Users.SingleOrDefaultAsync(u => u.Email == email);
         }
 
+        public async Task<User> GetUserByActiveCode(string activeCode)
+        {
+            User user = await _context.Users.SingleOrDefaultAsync(u => u.ActiveCode == activeCode);
+            if (user == null)
+                return null;
+            // expire token after 10 minute. 
+            int expireTimePerMin = Convert.ToInt32(_conf.GetSection("Emails").GetSection("ExpireTimePerMin").Value);
+            if (user.ActiveCodeGenerateDateTime.AddMinutes(expireTimePerMin) < DateTime.Now)
+            {
+                // send new link
+                await RevokeActiveCodeAndNewSendEmail(user, "Emails/_ForgotPassword", "بازیابی حساب کاربری");
+
+                return null;
+            }
+
+            return user;
+        }
+
+        public async Task<bool> UpdateUser(User user)
+        {
+            _context.Users.Update(user);
+            try
+            {
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+        }
+
         public async Task<byte> ActiveAccount(string activeCode)
         {
             User user = await _context.Users.SingleOrDefaultAsync(u => u.ActiveCode == activeCode);
@@ -73,7 +105,7 @@ namespace CourseSeller.Core.Services
             int expireTimePerMin = Convert.ToInt32(_conf.GetSection("Emails").GetSection("ExpireTimePerMin").Value);
             if (user.ActiveCodeGenerateDateTime.AddMinutes(expireTimePerMin) < DateTime.Now)
             {
-                // todo: send new link
+                // send new link
                 await RevokeActiveCodeAndNewSendEmail(user);
 
                 return TokenExipered;
@@ -85,17 +117,45 @@ namespace CourseSeller.Core.Services
             return SuccessActivated;
         }
 
-        public async Task<bool> RevokeActiveCodeAndNewSendEmail(User user)
+        public async Task<bool> RevokeActiveCodeAndNewSendEmail(User user, string emailBody = "Emails/_ActivateEmail", string emailSubject = "فعالسازی")
         {
             user.ActiveCode = CodeGenerators.GenerateUniqueCode();
             user.ActiveCodeGenerateDateTime = DateTime.Now;
-            await _context.SaveChangesAsync();
+            await UpdateUser(user);
 
-            string body = _viewRender.RenderToStringAsync("Emails/_ActivateEmail", user);
+            string body = _viewRender.RenderToStringAsync(emailBody, user);
             _backgroundJobClient.Enqueue(() =>
-                _sendEmail.Send(user.Email, "فعالسازی", body));
+                _sendEmail.Send(user.Email, emailSubject, body));
 
             return true;
+        }
+
+        public async Task<bool> RevokeActiveCode(User user)
+        {
+            user.ActiveCode = CodeGenerators.GenerateUniqueCode();
+            user.ActiveCodeGenerateDateTime = DateTime.Now;
+            await UpdateUser(user);
+
+            return true;
+        }
+
+        public async Task<bool> ResetPassword(User user, string newPassword)
+        {
+            string hashedNewPassword = PasswordHelper.HashPassword(newPassword);
+            user.Password = hashedNewPassword;
+            // expire old link to
+            user.ActiveCode = CodeGenerators.GenerateUniqueCode();
+            user.ActiveCodeGenerateDateTime = DateTime.Now;
+
+            try
+            {
+                await UpdateUser(user);
+                return true;
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
         }
     }
 }
