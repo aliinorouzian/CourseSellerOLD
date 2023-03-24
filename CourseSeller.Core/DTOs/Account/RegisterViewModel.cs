@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
-namespace CourseSeller.Core.DTOs.Accounts
+namespace CourseSeller.Core.DTOs.Account
 {
     public class RegisterViewModel
     {

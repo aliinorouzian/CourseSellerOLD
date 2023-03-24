@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 using CourseSeller.Core.Convertors;
-using CourseSeller.Core.DTOs.Accounts;
+using CourseSeller.Core.DTOs.Account;
 using CourseSeller.Core.Generators;
 using CourseSeller.Core.Security;
 using CourseSeller.Core.Senders;

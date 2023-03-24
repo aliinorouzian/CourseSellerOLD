@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CourseSeller.Core.DTOs.Accounts
+namespace CourseSeller.Core.DTOs.Account
 {
     public class LoginViewModel
     {

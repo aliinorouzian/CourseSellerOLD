@@ -1,6 +1,6 @@
 ﻿using System.Security.Claims;
 using CourseSeller.Core.Convertors;
-using CourseSeller.Core.DTOs.Accounts;
+using CourseSeller.Core.DTOs.Account;
 using CourseSeller.Core.Generators;
 using CourseSeller.Core.Security;
 using CourseSeller.Core.Senders;
