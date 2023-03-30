@@ -7,6 +7,7 @@ using CourseSeller.Core.DTOs.UserPanel;
 using CourseSeller.Core.Services.Interfaces;
 using CourseSeller.DataLayer.Contexts;
 using CourseSeller.DataLayer.Entities.Users;
+using Microsoft.EntityFrameworkCore;
 
 namespace CourseSeller.Core.Services
 {
@@ -34,6 +35,19 @@ namespace CourseSeller.Core.Services
             };
 
             return userInfo;
+        }
+
+        public async Task<SideBarViewModel> GetSideBarData(string userName)
+        {
+            var query = _context.Users.Where(u => u.UserName == userName)
+                .Select(u => new SideBarViewModel()
+                {
+                    UserName = u.UserName,
+                    ImageName = u.UserAvatar,
+                    RegisterDateTime = u.RegisterDateTime,
+                });
+
+            return await query.SingleOrDefaultAsync();
         }
     }
 }

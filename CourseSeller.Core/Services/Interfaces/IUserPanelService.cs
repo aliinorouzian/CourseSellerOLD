@@ -11,5 +11,6 @@ namespace CourseSeller.Core.Services.Interfaces
     public interface IUserPanelService
     {
         Task<UserInfoViewModel> GetUserInfo(string userName);
+        Task<SideBarViewModel> GetSideBarData(string userName);
     }
 }
