@@ -12,7 +12,7 @@ namespace CourseSeller.Core.Security
         // hash password with bcryot hash algorithm
         public static string HashPassword(string password)
         {
-            return BCrypt.Net.BCrypt.HashPassword(password, 13);
+            return BCrypt.Net.BCrypt.HashPassword(password, 12);
         }
 
         // verify password with bcryot hash algorithm

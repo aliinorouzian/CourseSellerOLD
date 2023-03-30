@@ -64,6 +64,11 @@ namespace CourseSeller.Core.Services
             return await _context.Users.SingleOrDefaultAsync(u => u.Email == email);
         }
 
+        public async Task<User> GetUserByUserName(string userName)
+        {
+            return await _context.Users.SingleOrDefaultAsync(u => u.UserName == userName);
+        }
+
         public async Task<User> GetUserByActiveCode(string activeCode)
         {
             User user = await _context.Users.SingleOrDefaultAsync(u => u.ActiveCode == activeCode);

@@ -14,6 +14,7 @@ namespace CourseSeller.Core.Services.Interfaces
         Task<bool> IsExistEmail(string email);
         Task<User> AddUser(User user);
         Task<User> GetUserByEmail(string email);
+        Task<User> GetUserByUserName(string userName);
         Task<User> GetUserByActiveCode(string activeCode);
         Task<bool> UpdateUser(User user);
         Task<byte> ActiveAccount(string activeCode);

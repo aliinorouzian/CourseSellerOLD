@@ -71,9 +71,9 @@ services.AddDbContext<MSSQLSContext>(options =>
 #region IoC
 
 services.AddTransient<IAccountService, AccountService>();
+services.AddTransient<IUserPanelService, UserPanelService>();
 services.AddTransient<IViewRenderService, RenderViewToString>();
 services.AddTransient<ISendEmail, SendEmail>();
-
 
 #endregion
 
@@ -98,8 +98,17 @@ app.UseAuthorization();
 
 app.UseHangfireDashboard();
 
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllerRoute(
+        name: "areas",
+        pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}"
+    );
+
+    endpoints.MapControllerRoute(
+        name: "default",
+        pattern: "{controller=Home}/{action=Index}/{id?}"
+    );
+});
 
 app.Run();
